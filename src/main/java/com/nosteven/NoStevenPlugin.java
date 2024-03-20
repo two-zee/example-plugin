@@ -86,7 +86,8 @@ public class NoStevenPlugin extends Plugin
 	{
 		try
 		{
-			return config.strictMode() ? name.startsWith("SteVen") : name.toLowerCase().startsWith("steven");
+			return config.strictMode() ? name.startsWith("SteVen") && name.length() == 12 :
+				   name.toLowerCase().startsWith("steven");
 		}
 		catch (Exception e)
 		{
