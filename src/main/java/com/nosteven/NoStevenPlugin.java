@@ -38,6 +38,51 @@ public class NoStevenPlugin extends Plugin
 
 	private final Hooks.RenderableDrawListener stevenFinder = this::isNotSteven;
 
+	@Subscribe
+	public void onScriptCallbackEvent(final ScriptCallbackEvent scriptCallbackEvent)
+	{
+		if (!scriptCallbackEvent.getEventName().equals("chatFilterCheck"))
+		{
+			return;
+		}
+
+		// Initialize all of these as early as possible to avoid them changing in the middle of execution
+		final var messages = client.getMessages();
+		final var intStack = client.getIntStack();
+		final var intStackSize = client.getIntStackSize();
+		final var stringStack = client.getStringStack();
+		final var stringStackSize = client.getStringStackSize();
+
+		final var message = stringStack[stringStackSize - 1];
+		final var messageNode = messages.get(intStack[intStackSize - 1]);
+
+		// Don't hide the player's own messages in case they have a Steven name
+		if (messageNode.getName() == null || messageNode.getValue().equals(client.getLocalPlayer().getName()))
+		{
+			return;
+		}
+
+		if (isStevenName(messageNode.getName()))
+		{
+			// Hide Steven's message
+			intStack[intStackSize - 3] = 0;
+		}
+
+		stringStack[stringStackSize - 1] = message;
+	}
+
+	private boolean isStevenName(final String name)
+	{
+		try
+		{
+			return config.strictMode() ? name.startsWith("SteVen") : name.toLowerCase().startsWith("steven");
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+
 	@Override
 	protected void startUp()
 	{
@@ -80,51 +125,6 @@ public class NoStevenPlugin extends Plugin
 		}
 
 		return !isStevenName(potentialSteven.getName());
-	}
-
-	private boolean isStevenName(final String name)
-	{
-		try
-		{
-			return config.strictMode() ? name.startsWith("SteVen") : name.toLowerCase().startsWith("steven");
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-	}
-
-	@Subscribe
-	private void onScriptCallbackEvent(final ScriptCallbackEvent scriptCallbackEvent)
-	{
-		if (!scriptCallbackEvent.getEventName().equals("chatFilterCheck"))
-		{
-			return;
-		}
-
-		// Initialize all of these as early as possible to avoid them changing in the middle of execution
-		final var messages = client.getMessages();
-		final var intStack = client.getIntStack();
-		final var intStackSize = client.getIntStackSize();
-		final var stringStack = client.getStringStack();
-		final var stringStackSize = client.getStringStackSize();
-
-		final var message = stringStack[stringStackSize - 1];
-		final var messageNode = messages.get(intStack[intStackSize - 1]);
-
-		// Don't hide the player's own messages in case they have a Steven name
-		if (messageNode.getName() == null || messageNode.getValue().equals(client.getLocalPlayer().getName()))
-		{
-			return;
-		}
-
-		if (isStevenName(messageNode.getName()))
-		{
-			// Hide Steven's message
-			intStack[intStackSize - 3] = 0;
-		}
-
-		stringStack[stringStackSize - 1] = message;
 	}
 
 	@Provides
