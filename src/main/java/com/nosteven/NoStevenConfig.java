@@ -11,7 +11,7 @@ public interface NoStevenConfig extends Config
 		position = 0,
 		keyName = "strictMode",
 		name = "Strict Mode",
-		description = "Only match Steven names such as \"SteVen29AjDx\" instead of simply checking for \"steven\"
+		description = "Only match Steven names such as \"SteVen29AjDx\" instead of simply checking for \"steven\""
 	)
 	default boolean strictMode()
 	{
